@@ -2,30 +2,31 @@ const path = require('path');
 const fs = require('fs');
 const solc = require('solc');
 
+const inboxPath = path.resolve(__dirname, 'contract', 'inbox.sol');
+const source = fs.readFileSync(inboxPath, 'utf-8');
 
-
-const inboxPath = path.resolve(__dirname,'contract','inbox.sol');
-const source = fs.readFileSync(inboxPath,'utf8');
-
-
-let input = {
-    language: "Solidity",
+var input = {
+    language: 'Solidity',
     sources: {
-      [inboxPath]: {
-        content: source,
-      },
+        'inbox.sol' : {
+            content: source
+        }
     },
-  
     settings: {
-      outputSelection: {
-        "*": {
-          "*": ["*"],
-        },
-      },
-    },
-  };
+        outputSelection: {
+            '*': {
+                '*': [ '*' ]
+            }
+        }
+    }
+}; 
 
-  var output = JSON.parse(solc.compile(JSON.stringify(input)));
+const output = JSON.parse(solc.compile(JSON.stringify(input)));
 
-  exports.abi = output.contracts['inbox.sol']['inbox'].abi;
-  exports.bytecode = output.contracts['inbox.sol'] ['inbox'].evm.bytecode.object;
+const interface = output.contracts['inbox.sol'].Inbox.abi;
+const bytecode = output.contracts['inbox.sol'].Inbox.evm.bytecode.object;
+
+module.exports = {
+    interface,
+    bytecode,
+};
